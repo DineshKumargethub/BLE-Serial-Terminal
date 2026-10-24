@@ -1,0 +1,20 @@
+<Window x:Class="BleTerminal.MacroEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Edit macro" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        Background="{DynamicResource WindowBg}" Foreground="{DynamicResource Fg}"
+        FontFamily="Segoe UI" FontSize="13">
+    <StackPanel Margin="16" Width="400">
+        <TextBlock Text="Button label"/>
+        <TextBox x:Name="txtName" Margin="0,2,0,10" MaxLength="12"/>
+        <TextBlock Text="Command"/>
+        <TextBox x:Name="txtCommand" Margin="0,2,0,10" FontFamily="Consolas"/>
+        <CheckBox x:Name="chkHex" Content="Hex bytes (e.g. 01 A0 FF) - sent raw, no newline" Margin="0,0,0,4"/>
+        <CheckBox x:Name="chkNewline" Content="Append TX newline (text commands)" Margin="0,0,0,14"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="OK" IsDefault="True" Width="80" Margin="0,0,8,0" Click="Ok_Click"/>
+            <Button Content="Cancel" IsCancel="True" Width="80"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

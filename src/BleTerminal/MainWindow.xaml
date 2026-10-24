@@ -1,0 +1,221 @@
+<Window x:Class="BleTerminal.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="BLE Serial Terminal" Height="740" Width="1120" MinHeight="520" MinWidth="860"
+        Background="{DynamicResource WindowBg}" Foreground="{DynamicResource Fg}" FontFamily="Segoe UI" FontSize="13">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="310" MinWidth="250"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*" MinWidth="420"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ================= LEFT: devices / connection ================= -->
+        <Grid Grid.Column="0" Margin="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <DockPanel Grid.Row="0">
+                <Button x:Name="btnScan" DockPanel.Dock="Right" Content="Scan" Padding="16,4"/>
+                <TextBlock Text="Devices" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            </DockPanel>
+
+            <CheckBox x:Name="chkHideUnnamed" Grid.Row="1" Content="Hide unnamed devices" Margin="0,8,0,0"/>
+
+            <Grid Grid.Row="2" Margin="0,8,0,10">
+            <ListBox x:Name="lstDevices" HorizontalContentAlignment="Stretch">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="2,3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Text="{Binding Mac}" Foreground="{DynamicResource SubtleFg}" FontSize="11"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Bars}" FontFamily="Consolas" Foreground="{DynamicResource Accent}" Margin="0,0,8,0"/>
+                                <TextBlock Text="{Binding RssiText}" Foreground="{DynamicResource SubtleFg}"/>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBlock x:Name="txtScanHint" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
+                       TextWrapping="Wrap" Margin="16" IsHitTestVisible="False" Foreground="{DynamicResource SubtleFg}"/>
+            </Grid>
+
+            <StackPanel Grid.Row="3">
+                <TextBlock Text="Profile" Margin="0,0,0,2"/>
+                <ComboBox x:Name="cmbProfile"/>
+                <Button x:Name="btnDeleteProfile" Content="Delete this saved profile" Visibility="Collapsed" Margin="0,6,0,0" Padding="6,3"/>
+            </StackPanel>
+
+            <Grid x:Name="pnlCustom" Grid.Row="4" Margin="0,8,0,0" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="Service" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <ComboBox x:Name="cmbCustomService" Grid.Row="0" Grid.Column="1" Margin="0,0,0,4"
+                          IsEditable="True" IsTextSearchEnabled="True"
+                          ToolTip="Discover UUIDs or enter a custom service UUID"/>
+                <TextBlock Grid.Row="1" Text="Notify" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <ComboBox x:Name="cmbCustomNotify" Grid.Row="1" Grid.Column="1" Margin="0,0,0,4"
+                          IsEditable="True" IsTextSearchEnabled="True"
+                          ToolTip="Select a Notify/Indicate characteristic or enter its UUID"/>
+                <TextBlock Grid.Row="2" Text="Write" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <ComboBox x:Name="cmbCustomWrite" Grid.Row="2" Grid.Column="1"
+                          IsEditable="True" IsTextSearchEnabled="True"
+                          ToolTip="Select a writable characteristic or enter its UUID"/>
+                <Button x:Name="btnDiscoverUuids" Grid.Row="3" Grid.Column="1" Content="Discover UUIDs"
+                        HorizontalAlignment="Stretch" Margin="0,4,0,0" Padding="6,4"
+                        ToolTip="Scan the selected BLE device for available GATT services and characteristics"/>
+                <Button x:Name="btnSaveProfile" Grid.Row="4" Grid.Column="1" Content="Save as profile..."
+                        HorizontalAlignment="Stretch" Margin="0,4,0,0" Padding="6,4"
+                        ToolTip="Store these UUIDs under a name so you can pick them for other devices of the same kind"/>
+            </Grid>
+
+            <StackPanel Grid.Row="5" Margin="0,10,0,0">
+                <DockPanel>
+                    <TextBlock Text="Write type" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <ComboBox x:Name="cmbWriteMode"/>
+                </DockPanel>
+                <CheckBox x:Name="chkAutoReconnect" Content="Auto-reconnect" Margin="0,8,0,0"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="6" Margin="0,12,0,0">
+                <Button x:Name="btnConnect" Content="Connect" Padding="0,8" FontWeight="SemiBold"/>
+                <DockPanel Margin="0,8,0,0">
+                    <Ellipse x:Name="dotState" Width="10" Height="10" Fill="Gray" VerticalAlignment="Center" Margin="0,0,8,0" DockPanel.Dock="Left"/>
+                    <TextBlock x:Name="txtStatus" Text="Not connected" TextWrapping="Wrap" FontWeight="SemiBold"/>
+                </DockPanel>
+                <TextBlock x:Name="txtChannels" FontFamily="Consolas" FontSize="11" TextWrapping="Wrap" Margin="18,2,0,0"
+                           Foreground="{DynamicResource SubtleFg}"/>
+                <TextBlock x:Name="txtCounters" FontFamily="Consolas" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"
+                           Foreground="{DynamicResource SubtleFg}"/>
+            </StackPanel>
+        </Grid>
+
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{DynamicResource Border}"/>
+
+        <!-- ================= RIGHT: terminal ================= -->
+        <Grid Grid.Column="2" Margin="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <WrapPanel Grid.Row="0" Margin="0,0,0,8">
+                <StackPanel Orientation="Horizontal" Margin="0,0,14,4">
+                    <TextBlock Text="View" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox x:Name="cmbView" Width="68"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,14,4">
+                    <TextBlock Text="RX newline" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox x:Name="cmbRxNl" Width="68"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,14,4">
+                    <TextBlock Text="TX newline" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox x:Name="cmbTxNl" Width="68"/>
+                </StackPanel>
+                <CheckBox x:Name="chkEcho" Content="Local echo" VerticalAlignment="Center" Margin="0,0,14,4"/>
+                <CheckBox x:Name="chkTimestamps" Content="Timestamps" VerticalAlignment="Center" Margin="0,0,14,4"/>
+                <CheckBox x:Name="chkAutoScroll" Content="Auto-scroll" VerticalAlignment="Center" Margin="0,0,14,4"/>
+                <CheckBox x:Name="chkAutoLog" Content="Log to file" VerticalAlignment="Center" Margin="0,0,4,4"/>
+                <Button x:Name="btnLogFolder" Content="Folder..." Padding="8,2" Margin="0,0,10,4"/>
+                <CheckBox x:Name="chkRawLog" Content="Raw byte log" VerticalAlignment="Center" Margin="0,0,14,4"
+                          ToolTip="Per-packet log of every RX notification and TX write as hex, with timestamps (same folder as the text log)"/>
+                <Button x:Name="btnSave" Content="Save..." Padding="10,2" Margin="0,0,6,4"/>
+                <Button x:Name="btnClear" Content="Clear..." Padding="10,2" Margin="0,0,6,4"
+                        ToolTip="Clear display / reset counters / clear session"/>
+                <Button x:Name="btnConfig" Content="Config..." Padding="10,2" Margin="0,0,6,4"
+                        ToolTip="Export or import macros, saved UUID profiles and settings"/>
+                <Button x:Name="btnAbout" Content="About / Donate" Padding="10,2" Margin="0,0,14,4" Click="About_Click"
+                        ToolTip="About this app, author, and optional donation link"/>
+                <CheckBox x:Name="chkDark" Content="Dark mode" VerticalAlignment="Center" Margin="0,0,0,4"/>
+            </WrapPanel>
+
+            <RichTextBox x:Name="rtbTerminal" Grid.Row="1" IsReadOnly="True"
+                         Background="#1E1E1E" Foreground="#D4D4D4" BorderBrush="{DynamicResource Border}" BorderThickness="1"
+                         FontFamily="Consolas" FontSize="14" Padding="8"
+                         VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                         ToolTip="Ctrl + mouse wheel changes the font size"/>
+
+            <StackPanel Grid.Row="2">
+                <!-- Shown automatically when the connected device exposes ST's OTA characteristics (FE22/FE23/FE24) -->
+                <Border x:Name="pnlOta" Visibility="Collapsed" Margin="0,10,0,0" Padding="10"
+                        BorderBrush="{DynamicResource Border}" BorderThickness="1" CornerRadius="4">
+                    <StackPanel>
+                        <TextBlock Text="Firmware update (ST OTA service detected)" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="Firmware (.bin)" VerticalAlignment="Center" Margin="0,0,10,6"/>
+                            <TextBox x:Name="txtOtaFile" Grid.Row="0" Grid.Column="1" Margin="0,0,8,6"/>
+                            <Button x:Name="btnOtaBrowse" Grid.Row="0" Grid.Column="2" Content="Browse..." Margin="0,0,0,6"/>
+                            <TextBlock Grid.Row="1" Text="Flash address" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal">
+                                <TextBox x:Name="txtOtaAddress" Width="130" FontFamily="Consolas"
+                                         ToolTip="Default 0x08007000 (offset 0x7000 from flash base)"/>
+                                <TextBlock Text="gap between writes (ms)" VerticalAlignment="Center" Margin="16,0,6,0"/>
+                                <TextBox x:Name="txtOtaDelay" Width="46"
+                                         ToolTip="Raise this if the device drops packets during the transfer"/>
+                            </StackPanel>
+                        </Grid>
+                        <ProgressBar x:Name="barOta" Height="16" Maximum="100" Margin="0,10,0,0"/>
+                        <DockPanel Margin="0,8,0,0">
+                            <Button x:Name="btnOtaStart" DockPanel.Dock="Right" Content="Start update" Padding="16,4" Margin="8,0,0,0"/>
+                            <Button x:Name="btnOtaCancel" DockPanel.Dock="Right" Content="Cancel" Padding="12,4" IsEnabled="False"/>
+                            <TextBlock x:Name="txtOtaStatus" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+                <WrapPanel x:Name="pnlMacros" Margin="0,10,0,0"/>
+            </StackPanel>
+
+            <DockPanel Grid.Row="3" Margin="0,4,0,0" LastChildFill="True">
+                <Button x:Name="btnSend" DockPanel.Dock="Right" Content="Send" Width="80" Margin="8,0,0,0" IsEnabled="False"/>
+                <ComboBox x:Name="cmbSend" DockPanel.Dock="Left" Width="68" Margin="0,0,8,0"/>
+                <TextBox x:Name="txtInput" VerticalContentAlignment="Center" FontFamily="Consolas" FontSize="14" Padding="4"
+                         ToolTip="Enter = send, Up/Down = history"/>
+            </DockPanel>
+
+            <!-- Periodic send: repeats whatever is in the input box (text or hex per the box on its left) -->
+            <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,8,0,0">
+                <TextBlock Text="Repeat input every" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <TextBox x:Name="txtRepeatMs" Width="64" ToolTip="Interval in ms (10 - 3,600,000)"/>
+                <TextBlock Text="ms, count" VerticalAlignment="Center" Margin="6,0,6,0"/>
+                <TextBox x:Name="txtRepeatCount" Width="54" ToolTip="0 = until stopped"/>
+                <Button x:Name="btnRepeat" Content="Start repeat" Padding="12,3" Margin="10,0,10,0" IsEnabled="False"/>
+                <TextBlock x:Name="txtRepeatStatus" VerticalAlignment="Center" Foreground="{DynamicResource SubtleFg}"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
