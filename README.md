@@ -79,8 +79,6 @@ Settings and macros persist in `%AppData%\BleTerminal\settings.json`.
 
 Created and maintained by **Dineshkumar G.** I am a passionate developer who enjoys building practical software to solve everyday problems and improve usability.
 
-The **About / Donate** button in the toolbar shows this information and the optional donation link inside the app.
-
 GitHub: https://github.com/DineshKumargethub
 
 ## Support the project
